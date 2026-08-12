@@ -1,0 +1,2 @@
+local_path: /opt/airflow/data
+bronze_path: "s3a://%s/bronze"

@@ -1,0 +1,7 @@
+data
+docker-compose.yaml
+notebook
+docker
+__pycache__
+target
+.env
