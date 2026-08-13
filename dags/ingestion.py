@@ -11,7 +11,7 @@ with DAG (
     default_args=default_args,
     start_date=datetime(2025, 5, 5),
     catchup=False,
-    schedule="@hourly",
+    schedule=None,
     max_active_runs=1
 ) as dag:
     BashOperator(

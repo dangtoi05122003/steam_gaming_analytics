@@ -1,0 +1,35 @@
+schema:
+  recommendationid: long
+  appid: long
+  game: string
+  author_steamid: long
+  author_num_games_owned: int
+  author_num_reviews: int
+  author_playtime_forever: long
+  author_playtime_last_two_weeks: long
+  author_playtime_at_review: long
+  author_last_played: long
+  language: string
+  review: string
+  timestamp_created: long
+  timestamp_updated: long
+  voted_up: boolean
+  votes_up: int
+  votes_funny: int
+  weighted_vote_score: double
+  comment_count: int
+  steam_purchase: boolean
+  received_for_free: boolean
+  written_during_early_access: boolean
+  hidden_in_steam_china: boolean
+  steam_china_location: string
+process:
+  - column: appid
+    operator: is_not_null
+  - column: recommendationid
+    operator: is_not_null
+  - column: game
+    operator: is_not_null
+path:
+  bronze_path: "s3a://%s/bronze"
+  silver_path: "s3a://%s/silver"
