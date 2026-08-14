@@ -1,5 +1,6 @@
 package com.steam.silver;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import static org.apache.spark.sql.functions.col;
+import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import com.steam.config.EnvConfig;
@@ -24,7 +26,14 @@ public class Transform {
         Map<String, Object> schema = (Map<String, Object>) config.get("schema");
         StructType sparkSchema  = schemaConfig.buildSchema(schema);
         SparkSession spark = sparkConfig.getSparkSession();
-        Dataset<Row> df = spark.read().schema(sparkSchema).parquet(bronzePath);
+        Dataset<Row> df = spark.read().parquet(bronzePath);
+        List<String> dfColumns = Arrays.asList(df.columns());
+        for (StructField field : sparkSchema.fields()) {
+            String colName = field.name();
+            if (dfColumns.contains(colName)) {
+                df = df.withColumn(colName, col(colName).cast(field.dataType()));
+            }
+        }
         List<Map<String, Object>> processes = (List<Map<String, Object>>) config.get("process");
         for (Map<String, Object> process: processes) {
             String column = (String) process.get("column");
