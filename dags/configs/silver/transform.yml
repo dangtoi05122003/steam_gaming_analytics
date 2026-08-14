@@ -1,0 +1,18 @@
+default_args:
+  owner: "steam"
+  retries: 5
+  retry_delay: 5
+dag_configs:
+  - dag_id: "transform"
+    schedule: null
+    max_active_runs: 1
+    catchup: false
+    start_date: "2025-05-05"
+    is_paused_upon_creation: False
+    tasks:
+      - task_id: silver
+        cwd: "/opt/airflow"
+        bash_command: "java --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED -cp /opt/airflow/app/spark-app.jar com.steam.silver.Transform"
+      - task_id: schema
+        cwd: "/opt/airflow"
+        bash_command: "java --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED -cp /opt/airflow/app/spark-app.jar com.steam.trino.Schema"
