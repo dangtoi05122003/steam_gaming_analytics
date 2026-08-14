@@ -38,6 +38,11 @@
             <artifactId>hadoop-aws</artifactId>
             <version>3.3.4</version>
         </dependency>
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-jdbc</artifactId>
+            <version>410</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>spark-app</finalName>
