@@ -1,0 +1,27 @@
+name: 'steam_analytics'
+version: '1.0.0'
+
+profile: 'steam_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+models:
+  steam_analytics:
+    +materialized: view
+    dim:
+      +catalog: postgres_dw
+      +materialized: table
+    fact:
+      +catalog: postgres_dw
+      +materialized: table
+    mart:
+      +catalog: postgres_dw
+      +materialized: table

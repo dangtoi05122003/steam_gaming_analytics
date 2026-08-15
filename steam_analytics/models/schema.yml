@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: hive
+    schema: steam
+    tables:
+      - name: steam

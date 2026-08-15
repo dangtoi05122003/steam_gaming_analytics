@@ -1,0 +1,27 @@
+select
+    recommendationid,
+    appid,
+    game,
+    author_steamid,
+    author_num_games_owned,
+    author_num_reviews,
+    author_playtime_forever,
+    author_playtime_last_two_weeks,
+    author_playtime_at_review,
+    from_unixtime(author_last_played) as author_last_played_at,
+    language,
+    review,
+    from_unixtime(timestamp_created) as created_at,
+    from_unixtime(timestamp_updated) as updated_at,
+    voted_up,
+    votes_up,
+    votes_funny,
+    weighted_vote_score,
+    comment_count,
+    steam_purchase,
+    received_for_free,
+    written_during_early_access,
+    hidden_in_steam_china,
+    steam_china_location
+from {{source('hive', 'steam')}}
+where timestamp_created  is not null
