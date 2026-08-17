@@ -1,0 +1,15 @@
+default_args:
+  owner: "steam"
+  retries: 5
+  retry_delay: 5
+dag_configs:
+  - dag_id: "gold"
+    schedule: null
+    max_active_runs: 1
+    catchup: false
+    start_date: "2025-05-05"
+    is_paused_upon_creation: False
+    tasks:
+      - task_id: gold
+        cwd: "/opt/airflow/steam_analytics"
+        bash_command: "dbt run"
