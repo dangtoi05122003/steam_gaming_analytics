@@ -17,7 +17,7 @@ public class Ingestion {
         String localPath = (String) config.get("local_path");
         String bronzePath = String.format((String) config.get("bronze_path"),EnvConfig.get("BUCKET_NAME"));
         SparkSession spark = sparkconfig.getSparkSession();
-        Dataset<Row> df = spark.read().option("header", "true").csv(localPath);
+        Dataset<Row> df = spark.read().option("header", "true").option("quote", "\"").option("escape", "\"").option("multiLine", "true").csv(localPath);
         df.write().mode("overwrite").parquet(bronzePath);
     } 
     public static void main(String[] args) {
