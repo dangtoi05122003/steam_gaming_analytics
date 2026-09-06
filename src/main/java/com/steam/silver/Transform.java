@@ -1,9 +1,10 @@
 package com.steam.silver;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -23,23 +24,32 @@ public class Transform {
     public void run() {
         String bronzePath = String.format((String) ((Map<String, Object>) config.get("path")).get("bronze_path"), EnvConfig.get("BUCKET_NAME"));
         String silverPath = String.format((String) ((Map<String, Object>) config.get("path")).get("silver_path"), EnvConfig.get("BUCKET_NAME"));
-        Map<String, Object> schema = (Map<String, Object>) config.get("schema");
-        StructType sparkSchema  = schemaConfig.buildSchema(schema);
         SparkSession spark = sparkConfig.getSparkSession();
         Dataset<Row> df = spark.read().parquet(bronzePath);
-        List<String> dfColumns = Arrays.asList(df.columns());
-        for (StructField field : sparkSchema.fields()) {
-            String colName = field.name();
-            if (dfColumns.contains(colName)) {
-                df = df.withColumn(colName, col(colName).cast(field.dataType()));
-            }
-        }
-        List<Map<String, Object>> processes = (List<Map<String, Object>>) config.get("process");
-        for (Map<String, Object> process: processes) {
-            String column = (String) process.get("column");
-            df = df.filter(col(column).isNotNull());
-        }
+        df = process(df);
         df.write().mode("overwrite").parquet(silverPath);
+    }
+    private Dataset<Row> process(Dataset<Row> df) {
+        Map<String, Object> schema = (Map<String, Object>) config.get("schema");
+        StructType sparkSchema  = schemaConfig.buildSchema(schema);
+        List<Column> selectExprs = new ArrayList<>();
+        for (StructField field : sparkSchema.fields()) {
+            selectExprs.add(col(field.name()).cast(field.dataType()).as(field.name()));
+        }
+        df = df.select(selectExprs.toArray(new Column[0]));
+        Map<String, Object> processes = (Map<String, Object>) config.get("process");
+        Map<String, Object> filters = (Map<String, Object>) processes.get("filters");
+        String filterColumn = (String) filters.get("name");
+        df = df.filter(col(filterColumn).isNotNull());
+        for (Map.Entry<String, Object> entry : processes.entrySet()) {
+            if(entry.getKey().equals("filters")) {
+                continue;
+            }
+            Map<String, Object> rule = (Map<String, Object>) entry.getValue();
+            String condition = (String) rule.get("condition");
+            df = df.filter(condition);
+        }
+        return df;
     }
     public static void main(String[] args) {
         Transform app = new Transform();

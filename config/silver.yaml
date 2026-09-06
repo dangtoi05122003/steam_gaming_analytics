@@ -24,12 +24,14 @@ schema:
   hidden_in_steam_china: boolean
   steam_china_location: string
 process:
-  - column: appid
-    operator: is_not_null
-  - column: recommendationid
-    operator: is_not_null
-  - column: game
-    operator: is_not_null
+  filters:
+    name: game
+  timestamp_sequence:
+    condition: "timestamp_updated >= timestamp_created"
+  playtime_logic:
+    condition: "author_playtime_at_review <= author_playtime_forever"
+  boolean_flag_logic:
+    condition: "NOT (steam_purchase = true AND received_for_free = true)"
 path:
   bronze_path: "s3a://%s/bronze"
   silver_path: "s3a://%s/silver"
