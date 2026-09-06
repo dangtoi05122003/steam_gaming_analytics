@@ -24,4 +24,3 @@ select
     hidden_in_steam_china,
     steam_china_location
 from {{source('hive', 'steam')}}
-where timestamp_created  is not null
